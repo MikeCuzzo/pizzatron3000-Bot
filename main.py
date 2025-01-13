@@ -8,18 +8,18 @@ import random
 def take_order():
     screenshot = pyautogui.screenshot(region=(1200, 230, 300, 200))
     screenshot.save("orderscreenshot.png")
-    order = pytesseract.image_to_string(screenshot)
+    order = pytesseract.image_to_string(screenshot).lower()
     add_cheese()
-    if "SEAWEED" in order:
-        add_seaweed(int(order[order.index("SEAWEED")-2]))
-    if "SHRIMP" in order:
-        add_shrimp(int(order[order.index("SHRIMP")-2]))
-    if "SQUID" in order:
-        add_squid(int(order[order.index("SQUID")-2]))
-    if "FISH" in order:
-        add_fish(int(order[order.index("FISH")-2]))
+    if "seaweed" in order:
+        add_seaweed(int(order[order.index("seaweed")-2]))
+    if "shrimp" in order:
+        add_shrimp(int(order[order.index("shrimp")-2]))
+    if "squid" in order:
+        add_squid(int(order[order.index("squid")-2]))
+    if "fish" in order:
+        add_fish(int(order[order.index("fish")-2]))
     print(order)
-    if "HOT SAUCE" in order:
+    if "hot" in order:
         add_sauce(True)
     else:
         add_sauce(False)
@@ -27,48 +27,47 @@ def take_order():
 def add_cheese():
     move_to_color("#E6E6B3")
     pyautogui.mouseDown()
-    move_to_color("#F4CB93")
+    move_to_color("#F4CB93",region = (0,540,1920,1080))
     pyautogui.mouseUp()
 
 def add_seaweed(count):
     for _ in range(count):
-        move_to_color("#52A001")
+        move_to_color("#52A001",region=(0,550,1920,650),offset=(100*count,-200))
         pyautogui.mouseDown()
-        move_to_color("#F4CB93")
+        move_to_color("#F4CB93",region = (0,540,1920,1080))
         pyautogui.mouseUp()
 
 def add_shrimp(count):
     for _ in range(count):
-        move_to_color("#FFCCCC")
+        move_to_color("#FFCCCC",region=(0,550,1920,650),offset=(100,-100))
         pyautogui.mouseDown()
-        move_to_color("#F4CB93")
+        move_to_color("#F4CB93",region = (0,540,1920,1080))
         pyautogui.mouseUp()
 
 def add_squid(count):
     for _ in range(count):
-        move_to_color("#2B91BB")
+        move_to_color("#2B91BB",region=(0,550,1920,650),offset=(100,-100))
         pyautogui.mouseDown()
-        move_to_color("#F4CB93")
+        move_to_color("#F4CB93",region = (0,540,1920,1080))
         pyautogui.mouseUp()
 
 def add_fish(count):
     for _ in range(count):
-        move_to_color("#999999")
+        move_to_color("#999999",region=(0,550,1920,650),offset=(100,-100))
         pyautogui.mouseDown()
-        move_to_color("#F4CB93")
+        move_to_color("#F4CB93",region = (0,540,1920,1080))
         pyautogui.mouseUp()
     
 
-def add_sauce(isHot):
-    if isHot:
+def add_sauce(is_hot):
+    if is_hot:
         move_to_color("#FF0000")
     else:
         move_to_color("#FF4D00")
     pyautogui.mouseDown()
-    x_val = 10
-    while move_to_color("#F4CB93",offset=(x_val,-150)):
-        x_val = random.randint(0,300)
-        pass
+    while find_color_position("#F4CB93"):
+        move_to_color("#F4CB93", offset=(0, -150),region = (0,540,1920,1080))
+    pyautogui.mouseUp()
 
 
 def find_color_position(hex_color, region=None):
@@ -83,9 +82,10 @@ def find_color_position(hex_color, region=None):
     target_color = tuple(int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
     
     # Capture a screenshot of the specified region
-    region = (0,540,1920,1080)
     screenshot = ImageGrab.grab(bbox=region) if region else ImageGrab.grab()
     screenshot.save("fullscreenshot.png")
+    if(hex_color == "#52A001"): 
+        screenshot.save("ingredientscreenshot.png")
     width, height = screenshot.size
     
     # Search pixel by pixel for the target color
@@ -99,18 +99,17 @@ def find_color_position(hex_color, region=None):
     return None
 
 
-def move_to_color(hex_color, region=None, duration=0.1, offset=(0, 0)):
+def move_to_color(hex_color, region=None, offset=(0, 0)):
     """
     Move the mouse to the position of the given hex color if found.
 
     :param hex_color: The hex color to search for (e.g., "#F3CA92").
     :param region: The region to search in (x, y, width, height). Default is the entire screen.
-    :param duration: Duration of the mouse movement in seconds.
     :return: True if the color is found and the mouse is moved, False otherwise.
     """
     position = find_color_position(hex_color, region)
     if position:
-        pyautogui.moveTo(position[0]+offset[0], position[1]+offset[1], duration=duration)
+        pyautogui.moveTo(position[0]+offset[0], position[1]+offset[1])
         return True
     else:
         print(f"Color {hex_color} not found on screen.")
@@ -120,7 +119,8 @@ def move_to_color(hex_color, region=None, duration=0.1, offset=(0, 0)):
 def main():
     if init():
         for _ in range(40):
-            take_order()
+            while find_color_position("#F4CB93") is not None:
+                take_order()
     else:
         print("Failed to initialize.")
 
