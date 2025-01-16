@@ -67,9 +67,12 @@ Functions
 
 - Finish the Bot:
 
-Refine the bot’s handling of more diverse orders, ensuring it can interpret additional pizza ingredients.
-Implement error handling for unexpected scenarios (e.g., missing or incomplete orders).
-Improve the speed and efficiency of the mouse movements to mimic human behavior more accurately.
+  - Improve sauce administration speed and accuracy
+  - Improve cheese drop accuracy
+  - Fix color coding, so that ingredients aren't mistaken for others
+    - Regions could be the fix
+    - Predefining ingredient coordinateds during Turn 1 is another idea
+  - Impliment more error handling and fail safes, incase of unforseen errors or glitches
 
 - Implement Dessert mode: Same core functionality, but within the dessert mode setting
 
