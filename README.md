@@ -2,7 +2,7 @@
 
 ## Created by MikeCuzzo: https://mikecuzzo.github.io/
 
-Pizzatron9000-Bot is an automation script for playing the Pizzatron 3000 mini-game New Club Penguin game. The bot interacts with the game window, taking screenshots of orders, reading the text using OCR, and adding various toppings to the pizza based on the order. It uses color-based mouse movements to simulate user actions and add ingredients like cheese, sauce, seaweed, shrimp, squid, and fish.
+Pizzatron9000-Bot is an automation script for playing the Pizzatron 3000 mini-game New Club Penguin game. The bot interacts with the game window, taking screenshots of orders, reading the text using OCR, and adding various toppings to the pizza based on the order. It uses color-based mouse movements to map and simulate user actions and add ingredients like cheese, sauce, seaweed, shrimp, squid, and fish.
 
 ## Requirements
 
@@ -18,23 +18,23 @@ To run Pizzatron3000-Bot, you will need:
 
 ### Ensure that you have the necessary permissions to run programs as an administrator for interaction with the game.
 
-How to Use
-Run Program as Administrator: To ensure the bot can interact with the game window properly, open your Python program as an administrator.
-If in VSCode, run that as administrator
+# How to Use
+
+- Run Program as Administrator: To ensure the bot can interact with the game window properly, open your Python program as an administrator.
+  If in VSCode, run that as administrator
+- Whenever a pizza appears on screen, press `shift+q` to dispense the ingredients. Then add sauce yourself _(will be automated eventually)_
 
 ## Recommended: Disable Ads
 
-Open New Club Penguin: Launch New Club Penguin (the game).
+- Open New Club Penguin: Launch New Club Penguin (the game).
+- Inspect Element in New Club Penguin (Ctrl + Shift + I):
+- Paste the following script in the Console tab to block ads:
 
-Inspect Element in New Club Penguin (Ctrl + Shift + I):
-
-Paste the following script in the Console tab to block ads:
-
-`function adblocker() {
+`function adblocker() { 
 document.querySelectorAll("[data-google-query-id]").forEach(e => e.remove())
 }
-
-setInterval(adblocker, 5000)`
+setInterval(adblocker, 5000)
+`
 
 ## Run the Bot: Execute the Python script (main.py) to begin automating the pizza ordering process. The bot will:
 
@@ -45,12 +45,24 @@ setInterval(adblocker, 5000)`
 
 Functions
 
-- `take_order()`: Captures an order from the game and processes the ingredients.
-- `add_cheese()`, add_seaweed(), add_shrimp(), add_squid(), add_fish(): Simulate adding toppings to the pizza based on the order.
-- `add_sauce()`: Adds hot sauce based on the detected text.
-- `find_color_position()`: Locates the position of a specified color on the screen.
-- `move_to_color()`: Moves the mouse to the detected color on the screen and simulates a click.
-- `main()`: Initializes the script and starts the automation process.
+- Helper Functions
+
+  - `pixel_search(color,region)` takes in a RGB color and a region and returns the X,Y coordinates of the color
+  - `drag_and_drop(start,end)`, takes in two sets of coordinates, grabs from the start and drops at the end
+
+- Ingredient functions
+
+  - `cheese(), seaweed(count), shrimp(count), squid(count), fish(count)`
+  - All of these functions control which ingredients to select and add to the pizza, and how many
+
+- Hotkey Handlers
+
+  - `on_action()` detects when the user presses `shift+q`, and will proceed to process the current order on the screen
+  - `on_exit()` detects when the user presses `esc` which will end the program
+
+- Setup Functions
+  - `init()` makes sure the 'New Club Penguin' is open before proceedein to the rest of the program
+  - `set_up()` maps out where each ingredient coordinate is for ease of access later
 
 ### Notes
 
@@ -67,11 +79,8 @@ Functions
 
 - Finish the Bot:
 
-  - Improve sauce administration speed and accuracy
-  - Improve cheese drop accuracy
-  - Fix color coding, so that ingredients aren't mistaken for others
-    - Regions could be the fix
-    - Predefining ingredient coordinateds during Turn 1 is another idea
+  - Add automatic sauce feature
+  - Improve ingredient drop accuracy
   - Impliment more error handling and fail safes, incase of unforseen errors or glitches
 
 - Implement Dessert mode: Same core functionality, but within the dessert mode setting
