@@ -6,7 +6,7 @@ import pytesseract
 
 
 # Helper Functions
-def pixel_search(color, region):
+def pixel_search(color, region = (0, 0, 1920, 1080)):
     """Searches for a pixel of the given color in the specified screen region."""
     screenshot = ImageGrab.grab(bbox=region)
     pixels = screenshot.load()
@@ -16,41 +16,52 @@ def pixel_search(color, region):
                 return x + region[0], y + region[1]
     return None
 
-def drag_and_drop(start, end):
+def drag_and_drop(start, end, drop=True):
     """Drags the mouse from start to end."""
     pyautogui.moveTo(start[0], start[1])
     pyautogui.mouseDown()
     pyautogui.moveTo(end[0], end[1])
-    pyautogui.mouseUp()
+    if drop:
+        pyautogui.mouseUp()
 
 # Ingredient Functions
 def cheese():
     crust = pixel_search((244,203,147),(0,540,1920,1080))
-    drag_and_drop((CheeseX,CheeseY),(crust[0],crust[1]+100))
+    if crust:
+        drag_and_drop((CheeseX,CheeseY),(crust[0]+50,crust[1]+100))
 
 def seaweed(count):
-    cheese()
     for i in range(count):
         crust = pixel_search((244,203,147),(0,540,1920,1080))
-        drag_and_drop((SeaweedX,SeaweedY),(crust[0]+(i*100),crust[1]+(100)))
+        if crust:
+            drag_and_drop((SeaweedX,SeaweedY),(crust[0]+((i*75)+100),crust[1]))
 
 def shrimp(count):
-    cheese()
     for i in range(count):
         crust = pixel_search((244,203,147),(0,540,1920,1080))
-        drag_and_drop((ShrimpX,ShrimpY),(crust[0]+(i*100),crust[1]+100))
+        if crust:
+            drag_and_drop((ShrimpX,ShrimpY),(crust[0]+((i*100)+100),crust[1]))
 
 def squid(count):
-    cheese()
     for i in range(count):
         crust = pixel_search((244,203,147),(0,540,1920,1080))
-        drag_and_drop((SquidX,SquidY),(crust[0]+(i*100),crust[1]+100))
+        if crust:
+            drag_and_drop((SquidX,SquidY),(crust[0]+((i*100)+100),crust[1]))
 
 def fish(count):
-    cheese()
     for i in range(count):
         crust = pixel_search((244,203,147),(0,540,1920,1080))
-        drag_and_drop((FishX,FishY),(crust[0]+(i*100),crust[1]+100))
+        if crust:
+            drag_and_drop((FishX,FishY),(crust[0]+((i*100)+100),crust[1]))
+
+def apply_sauce(is_hot):
+    if is_hot:
+        sauce = pixel_search((255, 225, 0))
+    else:
+        sauce = pixel_search((255, 77, 0))
+    crust = pixel_search((244,203,147),(0,540,1920,1080))
+    if crust:
+        drag_and_drop(sauce,crust,False)
 
 # Hotkey Handlers
 def on_exit():
@@ -63,13 +74,21 @@ def on_action():
     print("order: ", order)
 
     recipes = {
-        "cheese pizza": lambda: cheese(),
-        "seaweed pizza": lambda: seaweed(5),
-        "shrimp pizza": lambda: shrimp(5),
-        "squid pizza": lambda: squid(5),
-        "fish pizza": lambda: fish(5)
+            "cheese pizza": lambda: cheese(),
+            "supreme pizza": lambda: (cheese(), seaweed(1), shrimp(1), squid(1), fish(1)), 
+            "supreme sizzle pizza": lambda: (cheese(), seaweed(1), shrimp(1), squid(1), fish(1)),
+            "seaweed-shrimp pizza": lambda: (cheese(), seaweed(2), shrimp(2)),
+            "seaweed-squid pizza": lambda: (cheese(), seaweed(2), squid(2)),
+            "seaweed fish pizza": lambda: (cheese(), seaweed(2), fish(2)),
+            "shrimp squid pizza": lambda: (cheese(), shrimp(2), squid(2)),
+            "fish shrimp pizza": lambda: (cheese(), shrimp(2),fish(2)),
+            "fish dish": lambda: (cheese(), squid(2), fish(2)),
+            "seaweed pizza": lambda: (cheese(), seaweed(5)),
+            "shrimp pizza": lambda: (cheese(), shrimp(5)),
+            "squid pizza": lambda: (cheese(), squid(5)),
+            "fish pizza": lambda: (cheese(), fish(5)),
+        }
 
-    }
 
     for recipie in recipes:
         if recipie in order:
@@ -78,6 +97,9 @@ def on_action():
             break
         else:
             print("No recipie found")
+    
+    apply_sauce(("hot" or "spicy" or "sizzling" or "flamethrower") in order)
+
 
 
 # Game Setup
@@ -86,7 +108,10 @@ def set_up():
     global CheeseX, CheeseY, SeaweedX, SeaweedY, ShrimpX, ShrimpY, SquidX, SquidY, FishX, FishY
 
     # Define the screen regions for each ingredient
-    ingredient_bar = (640, 540, 1920, 1080)
+    ingredient_bar = pixel_search((204,51,51))
+    ingredient_bar = (ingredient_bar[0]-300, ingredient_bar[1]-50, ingredient_bar[0] + 500, ingredient_bar[1] + 30)
+    test = ImageGrab.grab(bbox=ingredient_bar)
+    test.save("test.png")
     CheeseX, CheeseY = pixel_search((255, 255, 204), ingredient_bar)
     print("Cheese: ", CheeseX, CheeseY)
     SeaweedX, SeaweedY = pixel_search((82, 160, 1), ingredient_bar)

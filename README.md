@@ -1,4 +1,4 @@
-# Pizzatron3000-Bot
+# Pizzatron9000-Bot
 
 ## Created by MikeCuzzo: https://mikecuzzo.github.io/
 
@@ -6,7 +6,7 @@ Pizzatron9000-Bot is an automation script for playing the Pizzatron 3000 mini-ga
 
 ## Requirements
 
-To run Pizzatron3000-Bot, you will need:
+To run Pizzatron9000-Bot, you will need:
 
 - Python 3.x
 - Required Python libraries:
@@ -41,19 +41,23 @@ setInterval(adblocker, 5000)
 - Take screenshots of the current order.
 - Use OCR (Optical Character Recognition) to extract text and identify the ingredients requested.
 - Add the corresponding toppings (cheese, seaweed, shrimp, squid, fish) and adjust the hot sauce based on the order.
-- The bot will continue running until it processes 40 orders, adding the appropriate ingredients to each pizza.
+- The bot will excecute everytime the user presses `shift+q` on their keyboard, and will quit when `esc` is pressed
 
 Functions
 
 - Helper Functions
 
   - `pixel_search(color,region)` takes in a RGB color and a region and returns the X,Y coordinates of the color
-  - `drag_and_drop(start,end)`, takes in two sets of coordinates, grabs from the start and drops at the end
+  - `drag_and_drop(start,end,drops)`, takes in two sets of coordinates, grabs from the start and drags to the end. Dropping is optional but usually enabled
 
 - Ingredient functions
 
   - `cheese(), seaweed(count), shrimp(count), squid(count), fish(count)`
-  - All of these functions control which ingredients to select and add to the pizza, and how many
+
+    - All of these functions control which ingredients to select and add to the pizza, and how many
+
+  - `apply_sauce(is_hot)` checks whether sauce is hot, then clicks and drags sauce towards the pizza.
+    - At this time, you have to apply the rest of the sauce yourself, but there is a plan to impliment automatic sauce application
 
 - Hotkey Handlers
 
@@ -61,7 +65,7 @@ Functions
   - `on_exit()` detects when the user presses `esc` which will end the program
 
 - Setup Functions
-  - `init()` makes sure the 'New Club Penguin' is open before proceedein to the rest of the program
+  - `init()` makes sure the 'New Club Penguin' is open before proceeding to the rest of the program
   - `set_up()` maps out where each ingredient coordinate is for ease of access later
 
 ### Notes
@@ -77,13 +81,19 @@ Functions
 
 ## TODO
 
-- Finish the Bot:
+- #### Small Tasks
 
-  - Add automatic sauce feature
-  - Improve ingredient drop accuracy
+  - Improve ingredient drop accuracy, particularly at the beggining and end of the game
   - Impliment more error handling and fail safes, incase of unforseen errors or glitches
 
-- Implement Dessert mode: Same core functionality, but within the dessert mode setting
+- #### Large Tasks
+  - Add automatic sauce application
+  - Implement Dessert mode: Same core functionality, but within the dessert mode setting
+- #### Extra Large Tasks
+  - Fully automate the game to allow for perfect score even when AFK
+  - Loop the game for endless play cycle while AFK
+
+#### If anyone would like to contribute to this project, please leave a pull request with a description of your changes :)
 
 ## Disclaimer
 
