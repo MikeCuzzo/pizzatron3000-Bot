@@ -49,6 +49,7 @@ Functions
 
   - `pixel_search(color,region)` takes in a RGB color and a region and returns the X,Y coordinates of the color
   - `drag_and_drop(start,end,drops)`, takes in two sets of coordinates, grabs from the start and drags to the end. Dropping is optional but usually enabled
+  - `get_pizza_center()` locates the center of the pizza when it is on the conveyor belt, allowing for accurate ingredient placing
 
 - Ingredient functions
 
@@ -83,7 +84,7 @@ Functions
 
 - #### Small Tasks
 
-  - Improve ingredient drop accuracy, particularly at the beggining and end of the game
+  - Improve ingredient drop accuracy near the end of the game
   - Impliment more error handling and fail safes, incase of unforseen errors or glitches
 
 - #### Large Tasks

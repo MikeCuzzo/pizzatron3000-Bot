@@ -3,6 +3,7 @@ from PIL import ImageGrab
 import keyboard
 import pygetwindow as gw
 import pytesseract
+import math
 
 
 # Helper Functions
@@ -24,44 +25,99 @@ def drag_and_drop(start, end, drop=True):
     if drop:
         pyautogui.mouseUp()
 
+def get_pizza_center():
+    """
+    Finds the coordinates of the center-most beige pixel in the given region.
+    
+    Parameters:
+        color (tuple): RGB color of the target pixel.
+        region (tuple): Region to search in (left, top, right, bottom).
+        
+    Returns:
+        tuple: Coordinates of the center-most beige pixel or None if no pixels are found.
+    """
+    color = (244,203,147)
+    region = (0,540,1920,1080)
+    screenshot = ImageGrab.grab(bbox=region)
+    pixels = screenshot.load()
+    width = region[2] - region[0]
+    height = region[3] - region[1]
+    center_x, center_y = width // 2, height // 2
+
+    beige_pixels = []
+    
+    # Collect all beige pixel coordinates
+    for x in range(width):
+        for y in range(height):
+            if pixels[x, y] == color:
+                beige_pixels.append((x + region[0], y + region[1]))
+    
+    if not beige_pixels:
+        return None  # No beige pixels found
+    
+    # Find the pixel closest to the center
+    def distance_to_center(pixel):
+        px, py = pixel
+        return math.sqrt((px - (region[0] + center_x)) ** 2 + (py - (region[1] + center_y)) ** 2)
+    
+    center_pixel = min(beige_pixels, key=distance_to_center)
+    return center_pixel
+
 # Ingredient Functions
 def cheese():
-    crust = pixel_search((244,203,147),(0,540,1920,1080))
+    print("Adding cheese")
+    crust = get_pizza_center()
     if crust:
-        drag_and_drop((CheeseX,CheeseY),(crust[0]+50,crust[1]+100))
+        drag_and_drop((CheeseX,CheeseY),(crust[0],crust[1]))
 
 def seaweed(count):
-    for i in range(count):
-        crust = pixel_search((244,203,147),(0,540,1920,1080))
+    print("Adding %d seaweed" % count)
+    for _ in range(count):
+        crust = get_pizza_center()
         if crust:
-            drag_and_drop((SeaweedX,SeaweedY),(crust[0]+((i*75)+100),crust[1]))
+            crust = (crust[0]+25,crust[1]+25)
+            drag_and_drop((SeaweedX,SeaweedY),(crust[0],crust[1]))
+        
 
 def shrimp(count):
-    for i in range(count):
-        crust = pixel_search((244,203,147),(0,540,1920,1080))
+    print("Adding %d shrimp" % count)
+    for _ in range(count):
+        crust = get_pizza_center()
         if crust:
-            drag_and_drop((ShrimpX,ShrimpY),(crust[0]+((i*100)+100),crust[1]))
+            crust = (crust[0]+25,crust[1]+25)
+            drag_and_drop((ShrimpX,ShrimpY),(crust[0],crust[1]))
+        
 
 def squid(count):
-    for i in range(count):
-        crust = pixel_search((244,203,147),(0,540,1920,1080))
+    print("Adding %d squid" % count)
+    for _ in range(count):
+        crust = get_pizza_center()
         if crust:
-            drag_and_drop((SquidX,SquidY),(crust[0]+((i*100)+100),crust[1]))
+            crust = (crust[0]+25,crust[1]+25)
+            drag_and_drop((SquidX,SquidY),(crust[0],crust[1]))
+        
 
 def fish(count):
-    for i in range(count):
-        crust = pixel_search((244,203,147),(0,540,1920,1080))
+    print("Adding %d fish" % count)
+    for _ in range(count):
+        crust = get_pizza_center()
         if crust:
-            drag_and_drop((FishX,FishY),(crust[0]+((i*100)+100),crust[1]))
+            crust = (crust[0]+25,crust[1]+25)
+            drag_and_drop((FishX,FishY),(crust[0],crust[1]))
+        
 
 def apply_sauce(is_hot):
+    print("Adding %s sauce" % ("hot" if is_hot else "pizza"))
     if is_hot:
         sauce = pixel_search((255, 225, 0))
     else:
         sauce = pixel_search((255, 77, 0))
-    crust = pixel_search((244,203,147),(0,540,1920,1080))
+    crust = get_pizza_center()
     if crust:
+        crust = (crust[0],crust[1]-150)
         drag_and_drop(sauce,crust,False)
+
+
 
 # Hotkey Handlers
 def on_exit():
@@ -75,29 +131,34 @@ def on_action():
 
     recipes = {
             "cheese pizza": lambda: cheese(),
-            "supreme pizza": lambda: (cheese(), seaweed(1), shrimp(1), squid(1), fish(1)), 
-            "supreme sizzle pizza": lambda: (cheese(), seaweed(1), shrimp(1), squid(1), fish(1)),
-            "seaweed-shrimp pizza": lambda: (cheese(), seaweed(2), shrimp(2)),
-            "seaweed-squid pizza": lambda: (cheese(), seaweed(2), squid(2)),
-            "seaweed fish pizza": lambda: (cheese(), seaweed(2), fish(2)),
-            "shrimp squid pizza": lambda: (cheese(), shrimp(2), squid(2)),
-            "fish shrimp pizza": lambda: (cheese(), shrimp(2),fish(2)),
-            "fish dish": lambda: (cheese(), squid(2), fish(2)),
-            "seaweed pizza": lambda: (cheese(), seaweed(5)),
-            "shrimp pizza": lambda: (cheese(), shrimp(5)),
-            "squid pizza": lambda: (cheese(), squid(5)),
-            "fish pizza": lambda: (cheese(), fish(5)),
+            "supreme pizza": lambda: (seaweed(1), shrimp(1), squid(1), fish(1)), 
+            "supreme sizzle pizza": lambda: (seaweed(1), shrimp(1), squid(1), fish(1)),
+            "seaweed-shrimp pizza": lambda: (seaweed(2), shrimp(2)),
+            "seaweed-squid pizza": lambda: (seaweed(2), squid(2)),
+            "seaweed fish pizza": lambda: (seaweed(2), fish(2)),
+            "shrimp squid pizza": lambda: (shrimp(2), squid(2)),
+            "fish shrimp pizza": lambda: (shrimp(2),fish(2)),
+            "fish dish": lambda: (squid(2), fish(2)),
+            "seaweed pizza":lambda: seaweed(5),
+            "shrimp pizza": lambda:shrimp(5),
+            "squid pizza": lambda: squid(5),
+            "fish pizza": lambda: fish(5),
         }
 
-
+    is_cheese = False
     for recipie in recipes:
+        print(f"Checking recipe: {recipie}")
         if recipie in order:
             print("Making", recipie)
+            if recipie == "cheese pizza":
+                is_cheese = True
             recipes[recipie]()
             break
         else:
-            print("No recipie found")
-    
+            print(f"No match for recipe: {recipie}")
+
+    if not is_cheese:
+        cheese()
     apply_sauce(("hot" or "spicy" or "sizzling" or "flamethrower") in order)
 
 
@@ -106,12 +167,18 @@ def on_action():
 def set_up():
     print("Setting up game...")
     global CheeseX, CheeseY, SeaweedX, SeaweedY, ShrimpX, ShrimpY, SquidX, SquidY, FishX, FishY
+    
 
     # Define the screen regions for each ingredient
     ingredient_bar = pixel_search((204,51,51))
+    if ingredient_bar is None:
+        print("Ingredient bar not found.")
+        exit()
     ingredient_bar = (ingredient_bar[0]-300, ingredient_bar[1]-50, ingredient_bar[0] + 500, ingredient_bar[1] + 30)
     test = ImageGrab.grab(bbox=ingredient_bar)
     test.save("test.png")
+ 
+    
     CheeseX, CheeseY = pixel_search((255, 255, 204), ingredient_bar)
     print("Cheese: ", CheeseX, CheeseY)
     SeaweedX, SeaweedY = pixel_search((82, 160, 1), ingredient_bar)
